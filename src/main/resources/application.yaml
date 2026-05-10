@@ -1,3 +1,28 @@
 spring:
   application:
     name: Minimarket
+  datasource:
+    url: jdbc:mysql://localhost:3306/supermarket?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa: # Configuración de JPA/Hibernate (ORM)
+    database-platform: org.hibernate.dialect.MySQLDialect # Dialecto para MySQL: traduce SQL a sintaxis MySQL
+    hibernate: # Subconfig de Hibernate
+      ddl-auto: update # Crear/Actualizar tablas automaticamente
+    show-sql: true # Mostrar SQL generado en los logs
+    properties: # Propiedades extras de hibernate
+      hibernate:
+        format-sql: true # Formate SQL en los log para mayor legibilidad
+
+
+server:
+  port: 9090
+  servlet:
+    context-path: /api/v1/supermarket
+
+logging:
+  level:
+    '[org.springframework.web]': DEBUG
+    '[org.hibernate.SQL]': DEBUG
+    '[org.hibernate.type.descriptor.sql.BasicBinder]': TRACE  
