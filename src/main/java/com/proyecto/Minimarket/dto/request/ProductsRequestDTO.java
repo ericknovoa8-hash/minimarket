@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 /**
- * el dto recibe los datos 
+ * El DTO recibe los datos 
  */
 public class ProductsRequestDTO {
     private String name;

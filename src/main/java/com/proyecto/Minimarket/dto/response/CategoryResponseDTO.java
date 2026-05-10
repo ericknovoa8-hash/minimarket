@@ -1,5 +1,8 @@
 package com.proyecto.Minimarket.dto.response;
 
+import java.util.List;
+
+
 import lombok.Data;
 
 @Data
@@ -10,5 +13,6 @@ public class CategoryResponseDTO {
     private Long id;
     private String name;
     private String description;
+    private List<ProductsResponseDTO> products;
     
 }

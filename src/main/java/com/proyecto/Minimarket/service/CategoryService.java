@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.proyecto.Minimarket.dto.request.CategoryRequestDTO;
 import com.proyecto.Minimarket.dto.response.CategoryResponseDTO;
+import com.proyecto.Minimarket.dto.response.HttpGlobalResponse;
+import com.proyecto.Minimarket.dto.response.MessageResponseDTO;
 import com.proyecto.Minimarket.dto.response.ProductsResponseDTO;
 import com.proyecto.Minimarket.entity.Category;
 import com.proyecto.Minimarket.entity.Products;
@@ -32,7 +34,7 @@ public class CategoryService {
         category.setName(request.getName());
         category.setDescription(request.getDescription());
         categoryRepository.save(category);
-        response.setMessage("categoria cread correctamente ");
+        response.setMessage("categoria creada correctamente ");
         return response;
 
     }
@@ -43,7 +45,7 @@ public class CategoryService {
      * y enviarla en formato DTO
      * @return
      */
-    public List<CategoryResponseDTO> getCateries(){
+    public List<CategoryResponseDTO> getCategories(){
         List<Category> categories = categoryRepository.findAll();
         List<CategoryResponseDTO> response = new ArrayList<>();
         for (Category category: categories){
@@ -64,7 +66,7 @@ public class CategoryService {
          * @param id
          * @return
          */
-        public HttpGlobalResponse<CategoryResponseDTO> getCateegory(Long id){
+        public HttpGlobalResponse<CategoryResponseDTO> getCategory(Long id){
             HttpGlobalResponse<CategoryResponseDTO> response = new HttpGlobalResponse<>();
             Category category = categoryRepository.findById(id)
             .orElseThrow(()-> new RuntimeException("categoria no encontrada "));
@@ -82,7 +84,7 @@ public class CategoryService {
                 responseProducts.setPrice(products.getPrice());
                 responseProducts.setStock(products.getStock());
                 responseProducts.setActive(products.isActive());
-                responseProducts.setCategoryId(id);
+                responseProducts.setCategory_id(id);
                 list.add(responseProducts);
             }
             responsecategory.setProducts(list);

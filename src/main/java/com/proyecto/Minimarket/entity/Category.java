@@ -1,10 +1,13 @@
 package com.proyecto.Minimarket.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -32,4 +35,18 @@ public class Category {
      * descripcion de categorias
      */
     
+    @OneToMany(mappedBy = "category")
+    private List<Products> products;
+    
+    /**
+     * se  utiliza para que la clase exista y funcioe el list y get 
+     * @return
+     */
+    public List<Products> getProducts() {
+    return products;
+    }
+    public void setProducts(List<Products> products) {
+    this.products = products;
+    }
+
 }
