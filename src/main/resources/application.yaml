@@ -23,6 +23,12 @@ server:
 
 logging:
   level:
-    '[org.springframework.web]': DEBUG
-    '[org.hibernate.SQL]': DEBUG
-    '[org.hibernate.type.descriptor.sql.BasicBinder]': TRACE  
+    '[org.springframework.web]': INFO
+
+security:
+  jwt:
+  # clave secreta que se genera con openssl rand -base64 32
+    secret-key: NKFlTyqwY/KXbrDmdF1z0k8H2edKhBY8BWYdpCCMYqk=
+    #Expiracion expresada en ms(10 min)
+    token-expiration: 600000
+      
