@@ -6,12 +6,15 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import lombok.Value;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -32,7 +35,8 @@ public class JwtService {
      * Generamos firma secreta para generar el jwt
      */
     private SecretKey getSigninKey() {
-        byte[] keyBytes = Decoders.BASE664.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
 
     }
     /**
@@ -61,45 +65,75 @@ public class JwtService {
      * @return Boolean
      */
     public Boolean isTokenValid(String token){
-        try{
+        try {
             //El parser intenta descifrar la firma con nuestra llave secreta
             Jwts.parser().verifyWith(getSigninKey()).build().parseSignedClaims(token);
             return true;
 
-        }catch(JwtException e){
+        } catch(JwtException e){
             log.error("Token is invalid: " + e.getMessage());
             return false;
 
-        }catch(Exception e){
+        } catch(Exception e){
             log.error("Ocurrio un error inesperado: " + e.getMessage());
             return false;
         }
     }
         /**
          * Extrae todos los claims (payload) del token
+         * @param <T>
+         * @param token
+         * @param resolver
+         * @return
          */
-        public <T> T extractClaims(String token, Function<Claims, T> resolver){
-            final Claims claims = Jwt.parser()
-            .verifyWith(getSigninKey())
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
-            return resolver.apply(claims);
+    public <T> T extractClaims(String token, Function<Claims, T> resolver) {
+        final Claims claims = Jwts.parser()
+                .verifyWith(getSigninKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return resolver.apply(claims);
         
 
     }
     /**
      * 
+     * @param token
+     * @return
      */
-    public Long extractUserId(String token){
-        return extractClaims(token, claims -> claims.get(claimName: "userId", requiretType: Long.class));
-
+    public String extractUsername(String token){
+        return extractClaims(token, Claims::getSubject);
+    
     }
     /**
-     * Extraer el id del rol del user
-     * 
-     * 
+     * extraer el id del rol
+     * @param token
+     * @return
      */
+    public Long extractUserId(String token){
+        return extractClaims(token, claims -> claims.get( "userId", Long.class));
+    }
+    public Long extractRolId(String token){
+        return extractClaims(token, claims -> claims.get( "rolId", Long.class));
 
+    }
+    public String refreshToken(String token) throws Exception {
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .verifyWith(getSigninKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e){
+           throw new Exception("token is expired " + e.getMessage());
+        } catch(JwtException e){
+            throw new Exception("Token is invalid " + e.getMessage());
+        } catch (Exception e){
+            throw new Exception("Server error " + e.getMessage());
+        }
+        
+        return generateToken(claims.get("userId", Long.class), claims.get( "rolId", Long.class), claims.getSubject());
+    }
 
 }
